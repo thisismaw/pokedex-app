@@ -2,21 +2,23 @@ import requests
 import pandas as pd
 from bs4 import BeautifulSoup as bs4
 
+openWebName = [] #okay
 pokeIcon = []  # okay
 pokeNum = []  # okay
 pokeName = []  # okay
 PokeFirstType = []  # okay
 PokeSecondType = []  # okay
-totalStats = []
-HP = []
-Atk = []
-Defense = []
-SpAtk = []
-SpDef = []
-Speed = []
-pages = []
-
+totalStats = []  # okay
+HP = []  # okay
+Atk = []  # okay
+Defense = []  # okay
+SpAtk = []  # okay
+SpDef = []  # okay
+Speed = []  # okay
+pages = []  # okay
+pageToScrape = 1
 url = 'https://pokemondb.net/pokedex/all'
+pokeWebPage = []
 pages.append(url)
 
 for item in pages:
@@ -70,9 +72,18 @@ for item in pages:
             grabSpd = grabSpDef.find_next_sibling('td')
             getSpd = grabSpd.getText()
             Speed.append(getSpd)
+        for name in findTr:
+            grabWebName = name.find('a', class_="ent-name")
+            grabHTML = 'https://pokemondb.net/' + str(grabWebName['href'])
+            openWebName.append(grabHTML)
 
-data = {"Icon": pokeIcon, "Number": pokeNum, "Name": pokeName, "First Type": PokeFirstType,
-        "Second Type": PokeSecondType, "Total Stats": totalStats,
-        "HP": HP, "Attack": Atk, "Defense": Defense, "Sp.Atk": SpAtk, "Sp.Def": SpDef, "Speed": Speed}
-df = pd.DataFrame(data=data)
-df.to_excel("D:/pokemonDB/pokemondb.xlsx", index=False)
+
+#for pokePage in openWebName:
+    #getPokePage = requests.get(pokePage)
+    #soup = bs4(getPokePage.text,'html.parser')
+   # for item in soup:
+
+#data = {"Icon": pokeIcon, "Number": pokeNum, "Name": pokeName, "First Type": PokeFirstType,
+# "Second Type": PokeSecondType, "Total Stats": totalStats,  "HP": HP, "Attack": Atk, "Defense": Defense, "Sp.Atk": SpAtk, "Sp.Def": SpDef, "Speed": Speed}
+#df = pd.DataFrame(data=data)
+#df.to_csv("D:/pokemonDB/pokemondb.csv", index=False)
