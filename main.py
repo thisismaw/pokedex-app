@@ -77,11 +77,16 @@ for item in pages:
             grabHTML = 'https://pokemondb.net/' + str(grabWebName['href'])
             openWebName.append(grabHTML)
 
+for pokePage in openWebName:
+    getPokePage = requests.get(pokePage)
+    soup = bs4(getPokePage.text,'html.parser')
+    grabSpecies = soup.find_all('table', class_="vitals-table")
+    for species in grabSpecies:
+        for mispecies in species.find_all('tr'):
+            print(mispecies)
 
-#for pokePage in openWebName:
-    #getPokePage = requests.get(pokePage)
-    #soup = bs4(getPokePage.text,'html.parser')
-   # for item in soup:
+
+
 
 #data = {"Icon": pokeIcon, "Number": pokeNum, "Name": pokeName, "First Type": PokeFirstType,
 # "Second Type": PokeSecondType, "Total Stats": totalStats,  "HP": HP, "Attack": Atk, "Defense": Defense, "Sp.Atk": SpAtk, "Sp.Def": SpDef, "Speed": Speed}
