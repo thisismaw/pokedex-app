@@ -16,6 +16,10 @@ SpAtk = []  # okay
 SpDef = []  # okay
 Speed = []  # okay
 pages = []  # okay
+pokeArtWork = [] # okay
+species = [] #okay
+height = []
+weight = []
 pageToScrape = 1
 url = 'https://pokemondb.net/pokedex/all'
 pokeWebPage = []
@@ -80,15 +84,31 @@ for item in pages:
 for pokePage in openWebName:
     getPokePage = requests.get(pokePage)
     soup = bs4(getPokePage.text,'html.parser')
-    grabSpecies = soup.find_all('table', class_="vitals-table")
-    for species in grabSpecies:
-        for mispecies in species.find_all('tr'):
-            print(mispecies)
+    grabImg = soup.find_all('div', class_="grid-col span-md-6 span-lg-4 text-center")
+    getVitals = soup.find('table',class_= "vitals-table")
+    for items in grabImg:
+        getImg = items.find('a')
+        saveImg = str(getImg['href'])
+        pokeArtWork.append(saveImg)
+        getImg = items.find('a')
+        saveImg = str(getImg['href'])
+        pokeArtWork.append(saveImg)
+    for pokemon in getVitals.find_all('tbody'):
+        pokeNum = pokemon.find('tr')
+        getDataFirst = pokeNum.find('td')
+        grabSecond = pokeNum.find_next_sibling('tr')
+        grabSpecies = grabSecond.find_next_sibling('tr')
+        pokeSpecies = grabSpecies.find('td').text
+        species.append(pokeSpecies)
+        grabHeight = grabSpecies.find_next_sibling('tr')
+        pokeHeight = grabHeight.find('td').text
+        height.append(pokeHeight)
+        grabWeight = grabHeight.find_next_sibling('tr')
+        pokeWeight = grabWeight.find('td').text
+        weight.append(pokeWeight)
 
-
-
-
-#data = {"Icon": pokeIcon, "Number": pokeNum, "Name": pokeName, "First Type": PokeFirstType,
-# "Second Type": PokeSecondType, "Total Stats": totalStats,  "HP": HP, "Attack": Atk, "Defense": Defense, "Sp.Atk": SpAtk, "Sp.Def": SpDef, "Speed": Speed}
-#df = pd.DataFrame(data=data)
-#df.to_csv("D:/pokemonDB/pokemondb.csv", index=False)
+data = {"Icon": pokeIcon, "Number": pokeNum, "Name": pokeName, "First Type": PokeFirstType,
+"Second Type": PokeSecondType, "Total Stats": totalStats,  "HP": HP, "Attack": Atk, "Defense": Defense
+    , "Sp.Atk": SpAtk, "Sp.Def": SpDef, "Speed": Speed, "Species" : species , "Height" : height , "Weight" : weight , "Image" : pokeArtWork}
+df = pd.DataFrame(data=data)
+df.to_csv("D:/pokemonDB/pokemondb.csv", index=False)
