@@ -1,6 +1,7 @@
 import requests
 import pandas as pd
 from bs4 import BeautifulSoup as bs4
+from collections import OrderedDict
 
 openWebName = []  # okay
 pokeIcon = []  # okay
@@ -21,7 +22,9 @@ species = []  # okay
 height = []
 weight = []
 url = 'https://pokemondb.net/pokedex/all'
+getBulbaURL = ''
 pokeWebPage = []
+finalFormPic = []
 pages.append(url)
 artWorkPokemon = []
 finalpic = []
@@ -41,7 +44,6 @@ for item in pages:
             grabSpanIcon = str(getSpanIcon['data-src'])
             pokeIcon.append(grabSpanIcon)
         for name in findTr:
-            # can be improved
             getName = name.find('span', class_="img-fixed icon-pkmn")
             getPokeName = str(getName['data-alt'])
             finalGetName = getPokeName.replace('icon', '')
@@ -76,43 +78,42 @@ for item in pages:
             grabSpd = grabSpDef.find_next_sibling('td')
             getSpd = grabSpd.getText()
             Speed.append(getSpd)
-        for name in findTr:
-            grabWebName = name.find('a', class_="ent-name")
-            grabHTML = 'https://pokemondb.net/' + str(grabWebName['href'])
-            openWebName.append(grabHTML)
-for pokePage in openWebName:
-    getPokePage = requests.get(pokePage)
-    soup = bs4(getPokePage.text, 'html.parser')
-    grabImg = soup.find_all('div', class_="grid-col span-md-6 span-lg-4 text-center")
-    getVitals = soup.find('table', class_="vitals-table")
-    for pokemon in getVitals.find_all('tbody'):
-        pokeNum = pokemon.find('tr')
-        getDataFirst = pokeNum.find('td')
-        grabSecond = pokeNum.find_next_sibling('tr')
-        grabSpecies = grabSecond.find_next_sibling('tr')
-        pokeSpecies = grabSpecies.find('td')
-        getSpecies = pokeSpecies.getText()
-        species.append(getSpecies)
-        grabHeight = grabSpecies.find_next_sibling('tr')
-        pokeHeight = grabHeight.find('td')
-        getPokeHeight = pokeHeight.getText()
-        pokemonHeight = getPokeHeight.replace(' ', ' ')
-        height.append(pokemonHeight)
-        grabWeight = grabHeight.find_next_sibling('tr')
-        pokeWeight = grabWeight.find('td')
-        getPokeWeight = pokeWeight.getText()
-        pokemonWeight = getPokeWeight.replace(' ', ' ')
-        weight.append(pokemonWeight)
-        for items in grabImg:
-            getImg = items.find('a')
-            saveImg = str(getImg['href'])
-            pokeArtWork.append(saveImg) if saveImg else "None"
-            artWorkPokemon = list(dict.fromkeys(pokeArtWork))
-secondData = {"Height": height, "Weight": weight, "Species": species, "Image" : artWorkPokemon}
-## data = {"Icon": pokeIcon, "Number": pokeNum, "Name": pokeName, "First Type": PokeFirstType,
-#       "Second Type": PokeSecondType,"Total Stats": totalStats, "HP": HP, "Attack": Atk, "Defense": Defense, "Sp.Atk": SpAtk,
-#      "Sp.Def": SpDef, "Speed": Speed}
-df = pd.DataFrame(data=secondData)
-df.to_csv("D:/pokemonDB/pokemonvitals.csv",index=False)
+            for name in findTr:
+                grabWebName = name.find('a', class_="ent-name")
+                grabHTML = 'https://pokemondb.net/' + str(grabWebName['href'])
+                openWebName.append(grabHTML)
+    for pokePage in openWebName:
+        getPokePage = requests.get(pokePage)
+        soup = bs4(getPokePage.text, 'html.parser')
+        getVitals = soup.find('table', class_="vitals-table")
+        for pokemon in getVitals.find_all('tbody'):
+            pokeNum = pokemon.find('tr')
+            getDataFirst = pokeNum.find('td')
+            grabSecond = pokeNum.find_next_sibling('tr')
+            grabSpecies = grabSecond.find_next_sibling('tr')
+            pokeSpecies = grabSpecies.find('td')
+            getSpecies = pokeSpecies.getText()
+            species.append(getSpecies)
+            grabHeight = grabSpecies.find_next_sibling('tr')
+            pokeHeight = grabHeight.find('td')
+            getPokeHeight = pokeHeight.getText()
+            pokemonHeight = getPokeHeight.replace(' ', ' ')
+            height.append(pokemonHeight)
+            grabWeight = grabHeight.find_next_sibling('tr')
+            pokeWeight = grabWeight.find('td')
+            getPokeWeight = pokeWeight.getText()
+            pokemonWeight = getPokeWeight.replace(' ', ' ')
+            weight.append(pokemonWeight)
+
+
+#thirdData = {"Image " : artWorkPokemon}
+#secondData = {"Height": height, "Weight": weight, "Species": species}
+#data = {"Icon": pokeIcon, "Number": pokeNum, "Name": pokeName, "First Type": PokeFirstType,
+     #"Second Type": PokeSecondType,"Total Stats": totalStats, "HP": HP, "Attack": Atk, "Defense": Defense, "Sp.Atk": SpAtk,
+ #  "Sp.Def": SpDef, "Speed": Speed, "Height": height, "Weight": weight, "Species": species}
+#getDF = pd.DataFrame(data=thirdData)
+#df = pd.DataFrame(data=data)
+#getDF.to_csv("D:/pokemonDB/pokemonImage.csv",index=False)
+#df.to_csv("D:/pokemonDB/pokemonvitals.csv",index=False)
 # df = pd.DataFrame(data=data)
 # df.to_csv("D:/pokemonDB/pokemondb.csv", index=False)
